@@ -117,6 +117,7 @@ object JustThrow : BotState {
 @SpringBootApplication
 class KotlinApplication {
     private var currentState: BotState = FindOpponent
+    private var lastTarget = Point(0,0)
     val logger = Logger.getLogger("Bot")
 
     @Bean
@@ -272,8 +273,13 @@ data class Arena(val dims: List<Int>, val state: Map<String, PlayerState>) {
     }
 
     fun isNotEmpty(point: Point): Boolean {
-        return state.values.any { it.x == point.x && it.y == point.y }
+        return !isEmpty(point)
     }
 
-    fun isEmpty(point: Point): Boolean = state.values.none { it.x == point.x && it.y == point.y }
+    fun isEmpty(point: Point): Boolean {
+        if (point.x < 0 || point.y < 0 || point.x >= dims[0] || point.y >= dims[1]) {
+            return false
+        }
+        return state.values.none { it.x == point.x && it.y == point.y }
+    }
 }
