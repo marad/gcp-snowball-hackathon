@@ -65,7 +65,6 @@ data class GoTo(val x: Int, val y: Int, val nextState: BotState) : BotState {
             }
         }
     }
-
 }
 
 data class TurnTo(val desiredFacing: String, val nextState: BotState) : BotState {
@@ -82,6 +81,9 @@ data class ThrowAt(val x: Int, val y: Int) : BotState {
     }
 }
 
+object JustThrow : BotState {
+    override fun decideStuff(update: ArenaUpdate): BotDecision = Action.fire
+}
 @SpringBootApplication
 class KotlinApplication {
     private var currentState: BotState = FindOpponent
@@ -89,8 +91,17 @@ class KotlinApplication {
 
     @Bean
     fun routes() = router {
-        GET {
+        GET("/reset") {
             currentState = FindOpponent
+            ServerResponse.ok().body(Mono.just("Ok, reset done!"))
+        }
+
+        GET("/throw") {
+            currentState = JustThrow
+            ServerResponse.ok().body(Mono.just("Ok, I'll just throw"))
+        }
+
+        GET("/") {
             ServerResponse.ok().body(Mono.just("Let the battle begin!"))
         }
 
