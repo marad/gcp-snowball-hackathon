@@ -14,6 +14,7 @@ import org.springframework.web.reactive.function.server.body
 import org.springframework.web.reactive.function.server.router
 import reactor.core.publisher.Mono
 import java.time.Instant
+import java.util.logging.Logger
 import kotlin.math.absoluteValue
 
 
@@ -83,6 +84,8 @@ class KotlinApplication {
 
             request.bodyToMono(ArenaUpdate::class.java).flatMap { arenaUpdate ->
                 writeCommittedStream!!.send(arenaUpdate.arena)
+
+                Logger.getLogger("Bot").info("Current state: $currentState")
 
                 val action: String = when(val decission = currentState.decideStuff(arenaUpdate)) {
                     is Action -> decission.action
