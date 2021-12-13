@@ -86,7 +86,7 @@ class KotlinApplication {
     @Bean
     fun routes() = router {
         GET {
-            currentState == FindOpponent
+            currentState = FindOpponent
             ServerResponse.ok().body(Mono.just("Let the battle begin!"))
         }
 
