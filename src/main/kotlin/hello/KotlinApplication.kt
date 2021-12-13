@@ -157,6 +157,7 @@ class KotlinApplication {
         }
 
 
+        var runningAway = 0
         POST("/**", accept(APPLICATION_JSON)) { request ->
 
             request.bodyToMono(ArenaUpdate::class.java).flatMap { arenaUpdate ->
@@ -167,8 +168,11 @@ class KotlinApplication {
                 logger.info("My info: ${arenaUpdate.myself}")
 
                 val myself = arenaUpdate.myself
-                if (myself.wasHit) {
+                if (runningAway <= 0 && myself.wasHit) {
+                    runningAway = 5
                     currentState = RunAway()
+                } else {
+                    runningAway--
                 }
 
                 var action = "T"
