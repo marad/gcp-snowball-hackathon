@@ -115,6 +115,11 @@ class KotlinApplication {
                 logger.info("Current state: $currentState")
                 logger.info("My info: ${arenaUpdate.myself}")
 
+                val myself = arenaUpdate.myself
+                if (myself.wasHit) {
+                    currentState = GoTo(myself.x+1, myself.y+1, FindOpponent)
+                }
+
                 var action = "T"
                 var counter = 0
                 while(true) {
