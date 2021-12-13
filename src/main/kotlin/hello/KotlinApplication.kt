@@ -58,7 +58,11 @@ data class GoTo(val x: Int, val y: Int, val nextState: BotState) : BotState {
         return if (desiredFacing != self.direction) {
             ChangeState(TurnTo(desiredFacing, this))
         } else {
-            Action.forward
+            if (update.arena.isEmpty(self.nextField())) {
+                Action.forward
+            } else {
+                Action.fire
+            }
         }
     }
 
@@ -189,15 +193,19 @@ data class PlayerState(val x: Int, val y: Int, val direction: String, val score:
         } else false
     }
 
-    fun turnTo(playerState: PlayerState): Action {
-        when(direction) {
-            "N" -> {
-
-            }
+    fun nextField(): Point {
+        return when(direction) {
+            "N" -> Point(x, y-1)
+            "S" -> Point(x, y+1)
+            "E" -> Point(x+1, y)
+            "W" -> Point(x-1, y)
+            else -> Point(x, y)
         }
-        TODO()
     }
 }
+
+data class Point(val x: Int, val y: Int)
+
 data class Links(val self: Self)
 data class Self(val href: String)
 data class Arena(val dims: List<Int>, val state: Map<String, PlayerState>) {
@@ -210,5 +218,9 @@ data class Arena(val dims: List<Int>, val state: Map<String, PlayerState>) {
             }
             .filter { it.second > 0 } // do not find myself
             .minByOrNull { it.second }!!.first
+    }
+
+    fun isEmpty(point: Point): Boolean {
+        return state.values.any { it.x == point.x && it.y == point.y }
     }
 }
