@@ -81,6 +81,18 @@ data class ThrowAt(val x: Int, val y: Int) : BotState {
     }
 }
 
+data class SingleAction(val action: Action, val nextState: BotState) : BotState {
+    private var actionDone = false
+    override fun decideStuff(update: ArenaUpdate): BotDecision {
+        if (actionDone) {
+            return action
+        } else {
+            return ChangeState(nextState)
+        }
+    }
+
+}
+
 data class RunAway(var steps: Int = 5) : BotState {
 
     override fun decideStuff(update: ArenaUpdate): BotDecision {
@@ -92,19 +104,27 @@ data class RunAway(var steps: Int = 5) : BotState {
 
         steps -= 1
         if (arena.isEmpty(self.up())) {
-            return ChangeState(GoTo(self.up().x, self.up().y, this))
+            return ChangeState(
+                TurnTo("N",
+                    SingleAction(Action.forward, this)))
         }
 
         if (arena.isEmpty(self.down())) {
-            return ChangeState(GoTo(self.down().x, self.up().y, this))
+            return ChangeState(
+                TurnTo("S",
+                    SingleAction(Action.forward, this)))
         }
 
         if (arena.isEmpty(self.left())) {
-            return ChangeState(GoTo(self.left().x, self.up().y, this))
+            return ChangeState(
+                TurnTo("W",
+                    SingleAction(Action.forward, this)))
         }
 
         if (arena.isEmpty(self.right())) {
-            return ChangeState(GoTo(self.right().x, self.up().y, this))
+            return ChangeState(
+                TurnTo("E",
+                    SingleAction(Action.forward, this)))
         }
         return Action.fire
     }
