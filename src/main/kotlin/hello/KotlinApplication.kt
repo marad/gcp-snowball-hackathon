@@ -19,7 +19,14 @@ import kotlin.math.absoluteValue
 
 
 sealed interface BotDecision
-data class Action(val action: String): BotDecision
+data class Action(val action: String): BotDecision {
+    companion object {
+        val forward = Action("F")
+        val left = Action("L")
+        val right = Action("R")
+        val throw = Action("T")
+    }
+}
 data class ChangeState(val newState: BotState): BotDecision
 
 sealed interface BotState {
@@ -40,17 +47,18 @@ object FindOpponent : BotState {
 data class GoTo(val x: Int, val y: Int, val nextState: BotState) : BotState {
     override fun decideStuff(update: ArenaUpdate): BotDecision {
         val self = update.myself
-        return when {
-            self.y < y ->
-                ChangeState(TurnTo("N", this))
-            self.y > y ->
-                ChangeState(TurnTo("S", this))
-            self.x < x ->
-                ChangeState(TurnTo("E", this))
-            self.x > x ->
-                ChangeState(TurnTo("W", this))
-            else ->
-                ChangeState(nextState)
+        val desiredFacing = when {
+            self.y < y -> "N"
+            self.y > y -> "S"
+            self.x < x -> "E"
+            self.x > x -> "W"
+            else -> return ChangeState(nextState)
+        }
+
+        return if (desiredFacing != self.direction) {
+            ChangeState(TurnTo(desiredFacing, this))
+        } else {
+            Action.forward
         }
     }
 
