@@ -58,10 +58,10 @@ data class GoTo(val x: Int, val y: Int, val nextState: BotState) : BotState {
         return if (desiredFacing != self.direction) {
             ChangeState(TurnTo(desiredFacing, this))
         } else {
-            if (update.arena.isEmpty(self.nextField())) {
-                Action.forward
-            } else {
+            if (update.arena.isNotEmpty(self.nextField())) {
                 Action.fire
+            } else {
+                Action.forward
             }
         }
     }
@@ -210,7 +210,7 @@ data class PlayerState(val x: Int, val y: Int, val direction: String, val score:
             "S" -> Point(x, y+1)
             "E" -> Point(x+1, y)
             "W" -> Point(x-1, y)
-            else -> Point(x, y)
+            else -> TODO("This should not happen")
         }
     }
 }
@@ -231,7 +231,7 @@ data class Arena(val dims: List<Int>, val state: Map<String, PlayerState>) {
             .minByOrNull { it.second }!!.first
     }
 
-    fun isEmpty(point: Point): Boolean {
+    fun isNotEmpty(point: Point): Boolean {
         return state.values.any { it.x == point.x && it.y == point.y }
     }
 }
