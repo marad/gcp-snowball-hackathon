@@ -24,7 +24,7 @@ data class Action(val action: String): BotDecision {
         val forward = Action("F")
         val left = Action("L")
         val right = Action("R")
-        val throw = Action("T")
+        val fire = Action("T")
     }
 }
 data class ChangeState(val newState: BotState): BotDecision
