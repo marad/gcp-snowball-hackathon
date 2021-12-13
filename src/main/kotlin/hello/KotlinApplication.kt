@@ -90,13 +90,24 @@ class KotlinApplication {
                 logger.info("Current state: $currentState")
                 logger.info("My info: ${arenaUpdate.myself}")
 
-                val action: String = when(val decission = currentState.decideStuff(arenaUpdate)) {
-                    is Action -> decission.action
-                    is ChangeState -> {
+                var action = "T"
+                var counter = 0
+                while(true) {
+                    counter++
+                    if (counter >= 100) {
+                        logger.info("It seems that I've hang on the decission! I'll just throw!")
+                        break
+                    }
+                    val decission = currentState.decideStuff(arenaUpdate)
+                    if (decission is ChangeState) {
                         currentState = decission.newState
-                        "T"
+                    } else if (decission is Action) {
+                        action = decission.action
+                        break
                     }
                 }
+
+                logger.info("My decission: $action")
 
                 ServerResponse.ok().body(Mono.just(action))
             }
