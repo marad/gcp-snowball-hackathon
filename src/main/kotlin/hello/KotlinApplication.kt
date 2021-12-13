@@ -22,20 +22,20 @@ object FindOpponent : BotState {
     override fun decideStuff(update: ArenaUpdate): BotDecision {
         val me = update.myself
         val nearestPlayer = update.arena.findNearestPlayer(me.x, me.y)
-        TODO()
+        return Action("T") // TODO fixme
     }
 }
 
 data class GoToPlayer(var targetPlayer: PlayerState) : BotState {
     override fun decideStuff(update: ArenaUpdate): BotDecision {
-        TODO("Not yet implemented")
+        return Action("T") // TODO fixme
     }
 
 }
 
 data class ThrowAt(val playerState: PlayerState) : BotState {
     override fun decideStuff(update: ArenaUpdate): BotDecision {
-        return Action("T")
+        return Action("T") // TODO
     }
 
 }
