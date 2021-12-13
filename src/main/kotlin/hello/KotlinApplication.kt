@@ -81,6 +81,36 @@ data class ThrowAt(val x: Int, val y: Int) : BotState {
     }
 }
 
+data class RunAway(var steps: Int = 5) : BotState {
+
+    override fun decideStuff(update: ArenaUpdate): BotDecision {
+        val arena = update.arena
+        val self = update.myself
+        if (steps <= 0) {
+            return ChangeState(FindOpponent)
+        }
+
+        steps -= 1
+        if (arena.isEmpty(self.up())) {
+            return ChangeState(GoTo(self.up().x, self.up().y, this))
+        }
+
+        if (arena.isEmpty(self.down())) {
+            return ChangeState(GoTo(self.down().x, self.up().y, this))
+        }
+
+        if (arena.isEmpty(self.left())) {
+            return ChangeState(GoTo(self.left().x, self.up().y, this))
+        }
+
+        if (arena.isEmpty(self.right())) {
+            return ChangeState(GoTo(self.right().x, self.up().y, this))
+        }
+        return Action.fire
+    }
+
+}
+
 object JustThrow : BotState {
     override fun decideStuff(update: ArenaUpdate): BotDecision = Action.fire
 }
@@ -117,7 +147,7 @@ class KotlinApplication {
 
                 val myself = arenaUpdate.myself
                 if (myself.wasHit) {
-                    currentState = GoTo(myself.x+1, myself.y+1, FindOpponent)
+                    currentState = RunAway()
                 }
 
                 var action = "T"
@@ -218,6 +248,11 @@ data class PlayerState(val x: Int, val y: Int, val direction: String, val score:
             else -> TODO("This should not happen")
         }
     }
+
+    fun up() = Point(x, y-1)
+    fun down() = Point(x, y+1)
+    fun left() = Point(x-1, y)
+    fun right() = Point(x+1, y)
 }
 
 data class Point(val x: Int, val y: Int)
@@ -239,4 +274,6 @@ data class Arena(val dims: List<Int>, val state: Map<String, PlayerState>) {
     fun isNotEmpty(point: Point): Boolean {
         return state.values.any { it.x == point.x && it.y == point.y }
     }
+
+    fun isEmpty(point: Point): Boolean = state.values.none { it.x == point.x && it.y == point.y }
 }
