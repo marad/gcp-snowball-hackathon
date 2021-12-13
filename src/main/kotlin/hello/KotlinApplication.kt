@@ -73,6 +73,7 @@ data class ThrowAt(val x: Int, val y: Int) : BotState {
 @SpringBootApplication
 class KotlinApplication {
     private var currentState: BotState = FindOpponent
+    val logger = Logger.getLogger("Bot")
 
     @Bean
     fun routes() = router {
@@ -85,7 +86,9 @@ class KotlinApplication {
             request.bodyToMono(ArenaUpdate::class.java).flatMap { arenaUpdate ->
                 writeCommittedStream!!.send(arenaUpdate.arena)
 
-                Logger.getLogger("Bot").info("Current state: $currentState")
+
+                logger.info("Current state: $currentState")
+                logger.info("My info: ${arenaUpdate.myself}")
 
                 val action: String = when(val decission = currentState.decideStuff(arenaUpdate)) {
                     is Action -> decission.action
