@@ -48,8 +48,8 @@ data class GoTo(val x: Int, val y: Int, val nextState: BotState) : BotState {
     override fun decideStuff(update: ArenaUpdate): BotDecision {
         val self = update.myself
         val desiredFacing = when {
-            self.y < y -> "N"
-            self.y > y -> "S"
+            self.y < y -> "S"
+            self.y > y -> "N"
             self.x < x -> "E"
             self.x > x -> "W"
             else -> return ChangeState(nextState)
@@ -86,8 +86,10 @@ class KotlinApplication {
     @Bean
     fun routes() = router {
         GET {
+            currentState == FindOpponent
             ServerResponse.ok().body(Mono.just("Let the battle begin!"))
         }
+
 
         POST("/**", accept(APPLICATION_JSON)) { request ->
 
